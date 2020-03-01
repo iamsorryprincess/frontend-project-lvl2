@@ -1,0 +1,37 @@
+{
+  "name": "frontend-project-lvl2",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "gendiff": "bin/gendiff.js"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamsorryprincess/frontend-project-lvl2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iamsorryprincess/frontend-project-lvl2/issues"
+  },
+  "homepage": "https://github.com/iamsorryprincess/frontend-project-lvl2#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.6",
+    "@babel/preset-env": "^7.8.6",
+    "eslint": "^6.8.0",
+    "jest": "^25.1.0"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.8.3",
+    "commander": "^4.1.1"
+  }
+}
