@@ -7,9 +7,6 @@ lint:
 test:
 	npm run test
 
-build:
-	npx babel src --out-dir dist
-
 publish:
 	npm publish --dry-run
 
