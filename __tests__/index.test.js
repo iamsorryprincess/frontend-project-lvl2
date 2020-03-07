@@ -27,3 +27,8 @@ test('test diff yml', () => {
   const result = makeDiff('yml');
   expect(result.join(' ')).toBe(expected.join(' '));
 });
+
+test('test diff ini', () => {
+  const result = makeDiff('ini');
+  expect(result.join(' ')).toBe(expected.join(' '));
+});
