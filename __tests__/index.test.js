@@ -15,20 +15,12 @@ const expected = [
 const makeDiff = (extension) => {
   const filename1 = `${dir}/before.${extension}`;
   const filename2 = `${dir}/after.${extension}`;
-  return diff(filename1, filename2);
+  const result = diff(filename1, filename2);
+  expect(result.join(' ')).toBe(expected.join(' '));
 };
 
-test('test diff json', () => {
-  const result = makeDiff('json');
-  expect(result.join(' ')).toBe(expected.join(' '));
-});
-
-test('test diff yml', () => {
-  const result = makeDiff('yml');
-  expect(result.join(' ')).toBe(expected.join(' '));
-});
-
-test('test diff ini', () => {
-  const result = makeDiff('ini');
-  expect(result.join(' ')).toBe(expected.join(' '));
+test('test diff', () => {
+  makeDiff('json');
+  makeDiff('yml');
+  makeDiff('ini');
 });

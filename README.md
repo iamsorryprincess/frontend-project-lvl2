@@ -8,3 +8,6 @@
 
 # yml
 [![asciicast](https://asciinema.org/a/iorgEIKn37wuTO5KwaYuOtYHl.png)](https://asciinema.org/a/iorgEIKn37wuTO5KwaYuOtYHl)
+
+# ini
+[![asciicast](https://asciinema.org/a/lzHEAArBzaaWHscN4lyEgIQh1.png)](https://asciinema.org/a/lzHEAArBzaaWHscN4lyEgIQh1)
