@@ -33,7 +33,7 @@ jobs:
       - name: tests
         run: |
           make test
-      - name: Code coverage
+      - uses: paambaati/codeclimate-action@v2.2.4
         env:
           CC_TEST_REPORTER_ID: 63312f1c5f943fab8e1ef7a05dee4c711fc04c20ff2624659d2e3a627af5787a
         with:
