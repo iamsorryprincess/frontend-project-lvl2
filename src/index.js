@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { readFileSync } from 'fs';
+import parse from './parser.js';
 
 const checkFiles = (file1, file2) => {
   const union = [...new Set(
@@ -28,8 +28,8 @@ const checkFiles = (file1, file2) => {
 };
 
 const diff = (filepath1, filepath2) => {
-  const file1 = JSON.parse(readFileSync(filepath1));
-  const file2 = JSON.parse(readFileSync(filepath2));
+  const file1 = parse(filepath1);
+  const file2 = parse(filepath2);
   return checkFiles(file1, file2);
 };
 

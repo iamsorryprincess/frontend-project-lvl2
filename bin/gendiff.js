@@ -19,7 +19,11 @@ program
   .arguments('<firstFile> <secondFile>')
   .action((firstFile, secondFile) => {
     console.log('');
-    print(diff(firstFile, secondFile));
+    try {
+      print(diff(firstFile, secondFile));
+    } catch (error) {
+      console.log(error.message);
+    }
     console.log('');
   });
 
