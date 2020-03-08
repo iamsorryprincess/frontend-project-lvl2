@@ -1,12 +1,7 @@
 #!/usr/bin/env node
 import program from 'commander';
 import diff from '../src/index.js';
-
-const print = (file) => {
-  for (const item of file) {
-    console.log(item);
-  }
-};
+import render from '../src/renderer.js';
 
 program
   .description('Compares two configuration files and shows the difference.')
@@ -20,7 +15,7 @@ program
   .action((firstFile, secondFile) => {
     console.log('');
     try {
-      print(diff(firstFile, secondFile));
+      render(diff(firstFile, secondFile));
     } catch (error) {
       console.log(error.message);
     }

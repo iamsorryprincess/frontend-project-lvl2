@@ -11,3 +11,6 @@
 
 # ini
 [![asciicast](https://asciinema.org/a/lzHEAArBzaaWHscN4lyEgIQh1.png)](https://asciinema.org/a/lzHEAArBzaaWHscN4lyEgIQh1)
+
+# files with a nested structure with any extension (json yaml ini)
+[![asciicast](https://asciinema.org/a/Ob4fICK4vaKCuiQI6SuNmW2oQ.png)](https://asciinema.org/a/Ob4fICK4vaKCuiQI6SuNmW2oQ)
