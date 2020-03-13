@@ -23,22 +23,18 @@ const createTreeObject = (afterFile, key, action, beforeFile = null) => {
   };
 }
 
-const getNodeByConditionsChain = (file1, file2, key) => {
-  const same = (file1, file2, key) => _.has(file1, key) && _.has(file2, key) ? unchanged(file1, file2, key) : added(file1, file2, key);
-  const unchanged = (file1, file2, key) => file2[key] === file1[key] ? createTreeObject(file2, key, 'not modified') : changed(file1, file2, key);
-  const added = (file1, file2, key) => _.has(file2, key) && !_.has(file1, key) ? createTreeObject(file2, key, 'added') : removed(file1, file2, key);
-  const removed = (file1, file2, key) => !_.has(file2, key) && _.has(file1, key) ? createTreeObject(file1, key, 'removed') : null;
-  const changed = (file1, file2, key) => isKeyObject(file1, key) && isKeyObject(file2, key) 
-      ? { name: key, action: 'modified', value: 'empty' }
-      : createTreeObject(file2, key, 'modified', file1);
-  return same(file1, file2, key);
-};
-
+const same = (file1, file2, key) => _.has(file1, key) && _.has(file2, key) ? unchanged(file1, file2, key) : added(file1, file2, key);
+const unchanged = (file1, file2, key) => file2[key] === file1[key] ? createTreeObject(file2, key, 'not modified') : changed(file1, file2, key);
+const added = (file1, file2, key) => _.has(file2, key) && !_.has(file1, key) ? createTreeObject(file2, key, 'added') : removed(file1, file2, key);
+const removed = (file1, file2, key) => !_.has(file2, key) && _.has(file1, key) ? createTreeObject(file1, key, 'removed') : null;
+const changed = (file1, file2, key) => isKeyObject(file1, key) && isKeyObject(file2, key) 
+  ? { name: key, action: 'modified', value: 'empty' }
+  : createTreeObject(file2, key, 'modified', file1);
 
 const diffKeys = (file1, file2) => {
   const union = _.union(_.keys(file1), _.keys(file2));
   const result = union.reduce((acc, key) => {
-    const elem = getNodeByConditionsChain(file1, file2, key);
+    const elem = same(file1, file2, key);
     if (elem.value === 'empty') {
       elem.value = diffKeys(file1[key], file2[key]);
     }
@@ -58,6 +54,3 @@ const diff = (filepath1, filepath2, format) => {
 };
 
 export default diff;
-
-diff('/home/nikita/Desktop/frontend-project-lvl2/__tests__/fixtures/before.json',
-'/home/nikita/Desktop/frontend-project-lvl2/__tests__/fixtures/after.json', 'json');
