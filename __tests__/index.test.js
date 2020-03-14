@@ -9,7 +9,7 @@ const afterJson = `${dir}/after.json`;
 const afterYml = `${dir}/after.yml`;
 const afterIni = `${dir}/after.ini`;
 
-const jsonBeforeAfterExpected = `{
+const jsonStringBeforeAfterExpected = `{
     common: {
         setting1: Value 1
       - setting2: 200
@@ -44,7 +44,7 @@ const jsonBeforeAfterExpected = `{
     }
 }`;
 
-const jsonAfterBeforeExpected = `{
+const jsonStringAfterBeforeExpected = `{
     common: {
       - follow: false
         setting1: Value 1
@@ -101,18 +101,20 @@ Property group1.nest was changed from str to [complex value]
 Property group3 was deleted
 Property group2 was added with value: [complex value]`;
 
+const jsonExpected = `{"properies":[{"name":"common","action":"modified","value":[{"name":"setting1","action":"not modified","value":"Value 1"},{"name":"setting2","action":"removed","value":200},{"name":"setting3","action":"modified","value":[{"name":"key","value":"value","action":"not modified"}],"oldValue":true},{"name":"setting6","action":"modified","value":[{"name":"key","action":"not modified","value":"value"},{"name":"ops","action":"added","value":"vops"}]},{"name":"follow","action":"added","value":false},{"name":"setting4","action":"added","value":"blah blah"},{"name":"setting5","action":"added","value":[{"name":"key5","value":"value5","action":"not modified"}]}]},{"name":"group1","action":"modified","value":[{"name":"baz","action":"modified","value":"bars","oldValue":"bas"},{"name":"foo","action":"not modified","value":"bar"},{"name":"nest","action":"modified","value":"str","oldValue":[{"name":"key","value":"value","action":"not modified"}]}]},{"name":"group2","action":"removed","value":[{"name":"abc","value":12345,"action":"not modified"}]},{"name":"group3","action":"added","value":[{"name":"fee","value":100500,"action":"not modified"}]}]}`;
+
 const normalize = str => str.split('').sort().join();
 
-test('test diff before after json format', () => {
-  expect(normalize(diff(beforeJson, afterJson, 'json'))).toBe(normalize(jsonBeforeAfterExpected));
-  expect(normalize(diff(beforeYml, afterYml, 'json'))).toBe(normalize(jsonBeforeAfterExpected));
-  expect(normalize(diff(beforeIni, afterIni, 'json'))).toBe(normalize(jsonBeforeAfterExpected));
+test('test diff before after json-string format', () => {
+  expect(normalize(diff(beforeJson, afterJson, 'string'))).toBe(normalize(jsonStringBeforeAfterExpected));
+  expect(normalize(diff(beforeYml, afterYml, 'string'))).toBe(normalize(jsonStringBeforeAfterExpected));
+  expect(normalize(diff(beforeIni, afterIni, 'string'))).toBe(normalize(jsonStringBeforeAfterExpected));
 });
 
-test('test diff after before json format', () => {
-  expect(normalize(diff(afterJson, beforeJson, 'json'))).toBe(normalize(jsonAfterBeforeExpected));
-  expect(normalize(diff(afterYml, beforeYml, 'json'))).toBe(normalize(jsonAfterBeforeExpected));
-  expect(normalize(diff(afterIni, beforeIni, 'json'))).toBe(normalize(jsonAfterBeforeExpected));
+test('test diff after before json-string format', () => {
+  expect(normalize(diff(afterJson, beforeJson, 'string'))).toBe(normalize(jsonStringAfterBeforeExpected));
+  expect(normalize(diff(afterYml, beforeYml, 'string'))).toBe(normalize(jsonStringAfterBeforeExpected));
+  expect(normalize(diff(afterIni, beforeIni, 'string'))).toBe(normalize(jsonStringAfterBeforeExpected));
 });
 
 test('test diff before after plain format', () => {
@@ -125,4 +127,9 @@ test('test diff after before plain format', () => {
   expect(normalize(diff(afterJson, beforeJson, 'plain'))).toBe(normalize(plainBeforeAfterExpected));
   expect(normalize(diff(afterYml, beforeYml, 'plain'))).toBe(normalize(plainBeforeAfterExpected));
   expect(normalize(diff(afterIni, beforeIni, 'plain'))).toBe(normalize(plainBeforeAfterExpected));
+});
+
+test('test diff before after json format', () => {
+  expect(JSON.stringify(JSON.parse(diff(beforeJson, afterJson, 'json')))).toBe(JSON.stringify(JSON.parse(jsonExpected)));
+  expect(JSON.stringify(JSON.parse(diff(beforeYml, afterYml, 'json')))).toBe(JSON.stringify(JSON.parse(jsonExpected)));
 });
