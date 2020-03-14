@@ -12,8 +12,11 @@
 # ini
 [![asciicast](https://asciinema.org/a/lzHEAArBzaaWHscN4lyEgIQh1.png)](https://asciinema.org/a/lzHEAArBzaaWHscN4lyEgIQh1)
 
-# files with a nested structure output json format
+# files with a nested structure output json-string format
 [![asciicast](https://asciinema.org/a/Ob4fICK4vaKCuiQI6SuNmW2oQ.png)](https://asciinema.org/a/Ob4fICK4vaKCuiQI6SuNmW2oQ)
 
 # files with a nested structure output plain format
 [![asciicast](https://asciinema.org/a/VPc7AaoAyYHG3xPjhILhbydog.png)](https://asciinema.org/a/VPc7AaoAyYHG3xPjhILhbydog)
+
+# files with a nested structure output json format
+[![asciicast](https://asciinema.org/a/1QkouIfY9BXrFQGraZSEFJs2C.png)](https://asciinema.org/a/1QkouIfY9BXrFQGraZSEFJs2C)

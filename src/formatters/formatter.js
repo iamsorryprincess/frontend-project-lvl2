@@ -3,11 +3,14 @@ import plain from './plain-formatter.js';
 
 const render = (file, format) => {
   switch (format) {
-    case 'json':
+    case 'string':
       return json(file);
 
     case 'plain':
       return plain(file);
+
+    case 'json':
+      return JSON.stringify({ properies: file });
 
     default:
       return 'unknown format';

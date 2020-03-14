@@ -7,7 +7,7 @@ program
   .version('1.0.0');
 
 program
-  .option('-f, --format [type]', 'output format', 'json');
+  .option('-f, --format [type]', 'output format', 'string');
 
 program
   .arguments('<firstFile> <secondFile>')

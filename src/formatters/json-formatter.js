@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import states from '../inner-states.json';
+import states from '../inner-states.js';
 
 const addSpaces = (str, level) => {
   const longSpace = '    ';

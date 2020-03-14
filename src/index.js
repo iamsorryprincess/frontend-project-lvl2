@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import parse from './parser.js';
 import render from './formatters/formatter.js';
-import states from './inner-states.json';
+import states from './inner-states.js';
 
 const stringEmpty = 'empty';
 const isKeyObject = (object, key) => _.isObject(object[key]) && !_.isArray(object[key]);
