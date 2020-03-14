@@ -51,11 +51,7 @@ const diff = (filepath1, filepath2, format) => {
   const file1 = parse(filepath1);
   const file2 = parse(filepath2);
   const dif = diffKeys(file1, file2);
-  const qwe = render(dif, format);
-  return qwe;
+  return render(dif, format);
 };
 
 export default diff;
-
-diff('/home/nikita/Desktop/frontend-project-lvl2/__tests__/fixtures/before.json',
-'/home/nikita/Desktop/frontend-project-lvl2/__tests__/fixtures/after.json','json');
