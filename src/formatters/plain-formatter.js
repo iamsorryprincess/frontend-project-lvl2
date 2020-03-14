@@ -56,10 +56,10 @@ const render = (diff) => {
   const value = [];
 
   const renderInner = (node) => {
-    for (const item of node) {
+    node.forEach(item => {
       fillArrayComparsionResults(item, value, result, renderInner);
       value.pop();
-    }
+    });
   }
 
   renderInner(diff);

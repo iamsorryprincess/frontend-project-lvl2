@@ -5,11 +5,17 @@ const addSpaces = (str, level) => {
   const longSpace = '    ';
   const shortSpace = '  ';
   const count = level + 1;
-  str = str[0] === '+' || str[0] === '-' ? `${shortSpace}${str}` : `${longSpace}${str}`;
-  for (let i = 1; i < count; i += 1) {
-    str = `${longSpace}${str}`
-  }
-  return str;
+  const result = str[0] === '+' || str[0] === '-' ? `${shortSpace}${str}` : `${longSpace}${str}`;
+
+  const addSpaceByLevel = (str, level, current) => {
+    if (current === level) {
+      return str;
+    } else {
+      return addSpaceByLevel(`${longSpace}${str}`, level, current + 1);
+    }
+  };
+
+  return addSpaceByLevel(result, count, 1);
 };
 
 const setSign = (name, action, value = null) => {

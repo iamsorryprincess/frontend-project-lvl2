@@ -79,7 +79,7 @@ const jsonStringAfterBeforeExpected = `{
     }
 }`;
 
-const plainAfterBeforeExpected = `Property common.setting2 was deleted
+const plainBeforeAfterExpected = `Property common.setting2 was deleted
 Property common.setting3 was changed from true to [complex value]
 Property common.setting6.ops was added with value: vops
 Property common.follow was added with value: false
@@ -90,7 +90,7 @@ Property group1.nest was changed from [complex value] to str
 Property group2 was deleted
 Property group3 was added with value: [complex value]`;
 
-const plainBeforeAfterExpected = `Property common.follow was deleted
+const plainAfterBeforeExpected = `Property common.follow was deleted
 Property common.setting3 was changed from [complex value] to true
 Property common.setting4 was deleted
 Property common.setting5 was deleted
@@ -105,31 +105,29 @@ const jsonExpected = `{"properies":[{"name":"common","action":"modified","value"
 
 const normalize = str => str.split('').sort().join();
 
-test('test diff before after json-string format', () => {
-  expect(normalize(diff(beforeJson, afterJson, 'string'))).toBe(normalize(jsonStringBeforeAfterExpected));
-  expect(normalize(diff(beforeYml, afterYml, 'string'))).toBe(normalize(jsonStringBeforeAfterExpected));
-  expect(normalize(diff(beforeIni, afterIni, 'string'))).toBe(normalize(jsonStringBeforeAfterExpected));
-});
+const check = ({ fileBefore, fileAfter, expected, format }) => {
+  const result = diff(fileBefore, fileAfter, format);
+  if (format !== 'json') {
+    expect(normalize(result)).toBe(normalize(expected));
+  } else {
+    expect(JSON.stringify(JSON.parse(diff(fileBefore, fileAfter, format)))).toBe(JSON.stringify(JSON.parse(expected)));
+  }
+};
 
-test('test diff after before json-string format', () => {
-  expect(normalize(diff(afterJson, beforeJson, 'string'))).toBe(normalize(jsonStringAfterBeforeExpected));
-  expect(normalize(diff(afterYml, beforeYml, 'string'))).toBe(normalize(jsonStringAfterBeforeExpected));
-  expect(normalize(diff(afterIni, beforeIni, 'string'))).toBe(normalize(jsonStringAfterBeforeExpected));
-});
-
-test('test diff before after plain format', () => {
-  expect(normalize(diff(beforeJson, afterJson, 'plain'))).toBe(normalize(plainAfterBeforeExpected));
-  expect(normalize(diff(beforeYml, afterYml, 'plain'))).toBe(normalize(plainAfterBeforeExpected));
-  expect(normalize(diff(beforeIni, afterIni, 'plain'))).toBe(normalize(plainAfterBeforeExpected));
-});
-
-test('test diff after before plain format', () => {
-  expect(normalize(diff(afterJson, beforeJson, 'plain'))).toBe(normalize(plainBeforeAfterExpected));
-  expect(normalize(diff(afterYml, beforeYml, 'plain'))).toBe(normalize(plainBeforeAfterExpected));
-  expect(normalize(diff(afterIni, beforeIni, 'plain'))).toBe(normalize(plainBeforeAfterExpected));
-});
-
-test('test diff before after json format', () => {
-  expect(JSON.stringify(JSON.parse(diff(beforeJson, afterJson, 'json')))).toBe(JSON.stringify(JSON.parse(jsonExpected)));
-  expect(JSON.stringify(JSON.parse(diff(beforeYml, afterYml, 'json')))).toBe(JSON.stringify(JSON.parse(jsonExpected)));
-});
+test.each`
+  fileBefore        | fileAfter         | expected                         | format      | extension
+  ${beforeJson}     | ${afterJson}      | ${jsonStringBeforeAfterExpected} | ${'string'} | ${'.json'}
+  ${beforeYml}      | ${afterYml}       | ${jsonStringBeforeAfterExpected} | ${'string'} | ${'.yml'}
+  ${beforeIni}      | ${afterIni}       | ${jsonStringBeforeAfterExpected} | ${'string'} | ${'.ini'}
+  ${afterJson}      | ${beforeJson}     | ${jsonStringAfterBeforeExpected} | ${'string'} | ${'.json'}
+  ${afterYml}       | ${beforeYml}      | ${jsonStringAfterBeforeExpected} | ${'string'} | ${'.yml'}
+  ${afterIni}       | ${beforeIni}      | ${jsonStringAfterBeforeExpected} | ${'string'} | ${'.ini'}
+  ${beforeJson}     | ${afterJson}      | ${plainBeforeAfterExpected}      | ${'plain'}  | ${'.json'}
+  ${beforeYml}      | ${afterYml}       | ${plainBeforeAfterExpected}      | ${'plain'}  | ${'.yml'}
+  ${beforeIni}      | ${afterIni}       | ${plainBeforeAfterExpected}      | ${'plain'}  | ${'.ini'}
+  ${afterJson}      | ${beforeJson}     | ${plainAfterBeforeExpected}      | ${'plain'}  | ${'.json'}
+  ${afterYml}       | ${beforeYml}      | ${plainAfterBeforeExpected}      | ${'plain'}  | ${'.yml'}
+  ${afterIni}       | ${beforeIni}      | ${plainAfterBeforeExpected}      | ${'plain'}  | ${'.ini'}
+  ${beforeJson}     | ${afterJson}      | ${jsonExpected}                  | ${'json'}   | ${'.json'}
+  ${beforeYml}      | ${afterYml}       | ${jsonExpected}                  | ${'json'}   | ${'.yml'}
+`('Check rendering for $format format for $extension file', check);

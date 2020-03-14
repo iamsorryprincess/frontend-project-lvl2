@@ -55,3 +55,6 @@ const diff = (filepath1, filepath2, format) => {
 };
 
 export default diff;
+
+diff('/home/nikita/Desktop/frontend-project-lvl2/__tests__/fixtures/before.json',
+'/home/nikita/Desktop/frontend-project-lvl2/__tests__/fixtures/after.json', 'string');
