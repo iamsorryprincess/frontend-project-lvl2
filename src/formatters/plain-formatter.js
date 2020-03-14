@@ -1,4 +1,56 @@
 import _ from 'lodash';
+import states from '../inner-states.json';
+
+const fillArrayComparsionResults = (item, acc, resultArray, callback) => {
+  if (item.action === states.removed) {
+    acc.push(item.name);
+    resultArray.push(['Property', acc.join('.'), 'was deleted'].join(' '));
+  } else {
+    ifAdded(item, acc, resultArray, callback);
+  }
+};
+
+const ifAdded = (item, acc, resultArray, callback) => {
+  if (item.action === states.added) {
+    acc.push(item.name);
+    resultArray.push(['Property', acc.join('.'), 'was added with value:', _.isObject(item.value) ? '[complex value]' : item.value].join(' '));
+  } else {
+    ifArray(item, acc, resultArray, callback);
+  }
+};
+
+const ifArray = (item, acc, resultArray, callback) => {
+  acc.push(item.name);
+  if (_.isArray(item.value)) {
+    ifOldValue(item, acc, resultArray, callback);
+  } else {
+    ifModified(item, acc, resultArray);
+  }
+};
+
+const ifModified = (item, acc, resultArray) => {
+  if (item.action === states.modified) {
+    resultArray.push(['Property',
+      acc.join('.'),
+      'was changed from',
+      _.isObject(item.oldValue) ? '[complex value]' : item.oldValue,
+      'to',
+      _.isObject(item.value) ? '[complex value]' : item.value].join(' '));
+  }
+}
+
+const ifOldValue = (item, acc, resultArray, callback) => {
+  if (item.oldValue !== undefined) {
+    resultArray.push(['Property',
+      acc.join('.'),
+      'was changed from',
+      _.isObject(item.oldValue) ? '[complex value]' : item.oldValue,
+      'to',
+      _.isObject(item.value) ? '[complex value]' : item.value].join(' '));
+  } else {
+    callback(item.value);
+  }
+};
 
 const render = (diff) => {
   const result = [];
@@ -6,43 +58,7 @@ const render = (diff) => {
 
   const renderInner = (node) => {
     for (const item of node) {
-      if (item.action === 'removed') {
-        value.push(item.name);
-        result.push([
-          'Property',
-          value.join('.'),
-          'was deleted'].join(' '));
-      } else if (item.action === 'added') {
-        value.push(item.name);
-        result.push([
-          'Property',
-          value.join('.'),
-          'was added with value:',
-          _.isObject(item.value) ? '[complex value]' : item.value].join(' '));
-      } else {
-        value.push(item.name);
-        if (_.isArray(item.value)) {
-          if (item.oldValue !== undefined) {
-            result.push([
-              'Property',
-              value.join('.'),
-              'was changed from',
-              _.isObject(item.oldValue) ? '[complex value]' : item.oldValue,
-              'to',
-              _.isObject(item.value) ? '[complex value]' : item.value].join(' '));
-          } else {
-            renderInner(item.value);
-          }
-        } else if (item.action === 'modified') {
-          result.push([
-            'Property',
-            value.join('.'),
-            'was changed from',
-            _.isObject(item.oldValue) ? '[complex value]' : item.oldValue,
-            'to',
-            _.isObject(item.value) ? '[complex value]' : item.value].join(' '));
-        }
-      }
+      fillArrayComparsionResults(item, value, result, renderInner);
       value.pop();
     }
   }
