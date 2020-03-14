@@ -48,26 +48,22 @@ const ifValueModified = (item, level) => {
     return { value, oldValue };
 
   } else {
-    const value = ifValueArray(item, level);
+    const value = ifValueNotChangedArray(item.name, item.value, level, item.action);
     return { value, oldValue: null };
   }
 };
 
 const ifOldValue = (item, level) => item.oldValue !== undefined
-  ? ifOldValueArray(item, level)
+  ? ifValueNotChangedArray(item.name, item.oldValue, level, states.removed)
   : null;
 
-const ifOldValueArray = (item, level) => _.isArray(item.oldValue)
-  ? addSpaces(setSign(item.name, states.removed), level)
-  : addSpaces(setSign(item.name, states.removed, item.oldValue), level);
+const ifValueNotChangedArray = (name, value, level, action) => _.isArray(value)
+  ? addSpaces(setSign(name, action), level)
+  : addSpaces(setSign(name, action, value), level);
 
 const ifValueChangedArray = (item, level) => _.isArray(item.value)
   ? addSpaces(setSign(item.name, item.oldValue === undefined ? item.action : states.added), level)
   : addSpaces(setSign(item.name, states.added, item.value), level);
-
-const ifValueArray = (item, level) => _.isArray(item.value)
-  ? addSpaces(setSign(item.name, item.action), level)
-  : addSpaces(setSign(item.name, item.action, item.value), level);
 
 const render = (diff) => {
   const result = [];
