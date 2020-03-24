@@ -13,11 +13,7 @@ program
   .arguments('<firstFile> <secondFile>')
   .action((firstFile, secondFile) => {
     console.log('');
-    try {
-      console.log(diff(firstFile, secondFile, program.format));
-    } catch (error) {
-      console.log(error.message);
-    }
+    console.log(diff(firstFile, secondFile, program.format));
     console.log('');
   });
 
