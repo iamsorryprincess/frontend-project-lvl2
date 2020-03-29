@@ -12,6 +12,3 @@ test:
 
 publish:
 	npm publish --dry-run
-
-start:
-	npx node src/index.js;
