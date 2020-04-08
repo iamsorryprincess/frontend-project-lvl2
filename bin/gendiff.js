@@ -10,10 +10,10 @@ program
   .option('-f, --format [type]', 'output format', 'string');
 
 program
-  .arguments('<firstFile> <secondFile>')
-  .action((firstFile, secondFile) => {
+  .arguments('<beforeFilePath> <afterFilePath>')
+  .action((beforeFilePath, afterFilePath) => {
     console.log('');
-    console.log(diff(firstFile, secondFile, program.format));
+    console.log(diff(beforeFilePath, afterFilePath, program.format));
     console.log('');
   });
 

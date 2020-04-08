@@ -1,68 +1,42 @@
 import _ from 'lodash';
 import states from '../inner-states.js';
 
-const createChangedString = (item, value) => {
-  return ['Property',
-  value.join('.'),
-  'was changed from',
-  _.isObject(item.oldValue) ? '[complex value]' : item.oldValue,
-  'to',
-  _.isObject(item.value) ? '[complex value]' : item.value].join(' ');
-}
+const buildStringName = (name, path) => path.length === 0 ? name : `${path.join('.')}.${name}`;
+const buildStringValue = (value) => _.isArray(value) ? '[complex value]' : value;
 
-const fillArrayComparsionResults = (item, acc, resultArray, callback) => {
-  if (item.action === states.removed) {
-    acc.push(item.name);
-    resultArray.push(['Property', acc.join('.'), 'was deleted'].join(' '));
-  } else {
-    ifAdded(item, acc, resultArray, callback);
+const conditions = [
+  {
+    condition: (item) => item.action === states.modified && _.isArray(item.value) && _.isUndefined(item.oldValue),
+    conditionResult: (item, path, callback) => callback(item.value, [...path, item.name])
+  },
+  {
+    condition: (item) => item.action === states.modified && !_.isUndefined(item.oldValue),
+    conditionResult: (item, path) => `Property ${buildStringName(item.name, path)} was changed from ${buildStringValue(item.oldValue)} to ${buildStringValue(item.value)}`
+  },
+  {
+    condition: (item) => item.action === states.removed,
+    conditionResult: (item, path) => `Property ${buildStringName(item.name, path)} was deleted`
+  },
+  {
+    condition: (item) => item.action === states.added,
+    conditionResult: (item, path) => `Property ${buildStringName(item.name, path)} was added with value: ${buildStringValue(item.value)}`
+  },
+  {
+    condition: (item) => item.action === states.notModified,
+    conditionResult: () => []
   }
-};
-
-const ifAdded = (item, acc, resultArray, callback) => {
-  if (item.action === states.added) {
-    acc.push(item.name);
-    resultArray.push(['Property', acc.join('.'), 'was added with value:', _.isObject(item.value) ? '[complex value]' : item.value].join(' '));
-  } else {
-    ifArray(item, acc, resultArray, callback);
-  }
-};
-
-const ifArray = (item, acc, resultArray, callback) => {
-  acc.push(item.name);
-  if (_.isArray(item.value)) {
-    ifOldValue(item, acc, resultArray, callback);
-  } else {
-    ifModified(item, acc, resultArray);
-  }
-};
-
-const ifModified = (item, acc, resultArray) => {
-  if (item.action === states.modified) {
-    resultArray.push(createChangedString(item, acc));
-  }
-}
-
-const ifOldValue = (item, acc, resultArray, callback) => {
-  if (item.oldValue !== undefined) {
-    resultArray.push(createChangedString(item, acc));
-  } else {
-    callback(item.value);
-  }
-};
+];
 
 const render = (diff) => {
-  const result = [];
-  const value = [];
-
-  const renderInner = (node) => {
-    node.forEach(item => {
-      fillArrayComparsionResults(item, value, result, renderInner);
-      value.pop();
+  const inner = (nodes, path) => {
+    const result = nodes.map(node => {
+      const { conditionResult } = conditions.find(({ condition }) => condition(node));
+      return conditionResult(node, path, inner);
     });
-  }
+    return result.flat(Infinity);
+  };
 
-  renderInner(diff);
+  const result = inner(diff, []);
   return result.join('\n');
 };
 

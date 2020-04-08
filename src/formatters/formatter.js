@@ -1,16 +1,16 @@
 import json from './json-formatter.js';
 import plain from './plain-formatter.js';
 
-const render = (file, format) => {
+const render = (data, format) => {
   switch (format) {
     case 'string':
-      return json(file);
+      return json(data);
 
     case 'plain':
-      return plain(file);
+      return plain(data);
 
     case 'json':
-      return JSON.stringify({ properies: file });
+      return JSON.stringify({ properies: data });
 
     default:
       return 'unknown format';
