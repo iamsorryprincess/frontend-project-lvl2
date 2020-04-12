@@ -5,32 +5,22 @@ import parse from './parsers.js';
 import render from './formatters/formatter.js';
 import states from './inner-states.js';
 
-const toNodeObject = (object, key) => {
-  return !_.isPlainObject(object[key]) ? object[key] : _.keys(object[key]).map((innerKey) => {
-    return {
-      name: innerKey,
-      value: object[key][innerKey],
-      action: states.notModified
-    }
-  });
-};
-
 const conditions = [
   {
     condition: (object1, object2, key) => _.has(object2, key) && !_.has(object1, key),
-    conditionResult: (key, object) => ({ name: key, value: toNodeObject(object, key), action: states.added })
+    conditionResult: (key, object) => ({ name: key, value: object[key], action: states.added })
   },
   {
     condition: (object1, object2, key) => !_.has(object2, key) && _.has(object1, key),
-    conditionResult: (key, object2, object1) => ({ name: key, value: toNodeObject(object1, key), action: states.removed })
+    conditionResult: (key, object2, object1) => ({ name: key, value: object1[key], action: states.removed })
   },
   {
     condition: (object1, object2, key) => object1[key] === object2[key],
-    conditionResult: (key, object) => ({ name: key, value: toNodeObject(object, key), action: states.notModified })
+    conditionResult: (key, object) => ({ name: key, value: object[key], action: states.notModified })
   },
   {
     condition: (object1, object2, key) => !(_.isPlainObject(object1[key]) && _.isPlainObject(object2[key])),
-    conditionResult: (key, object2, object1) => ({ name: key, value: toNodeObject(object2, key), oldValue: toNodeObject(object1, key), action: states.modified })
+    conditionResult: (key, object2, object1) => ({ name: key, value: object2[key], oldValue: object1[key], action: states.modified })
   },
   {
     condition: (object1, object2, key) => _.isPlainObject(object1[key]) && _.isPlainObject(object2[key]),
@@ -56,6 +46,3 @@ const diff = (filepathBefore, filepathAfter, format) => {
 };
 
 export default diff;
-
-diff('/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/before.json',
-'/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/after.json', 'string');

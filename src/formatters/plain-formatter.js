@@ -2,7 +2,7 @@ import _ from 'lodash';
 import states from '../inner-states.js';
 
 const buildStringName = (name, path) => path.length === 0 ? name : `${path.join('.')}.${name}`;
-const buildStringValue = (value) => _.isArray(value) ? '[complex value]' : value;
+const buildStringValue = (value) => _.isObject(value) ? '[complex value]' : value;
 
 const conditions = [
   {
