@@ -1,14 +1,12 @@
 import _ from 'lodash';
 import { readFileSync } from 'fs';
 import path from 'path';
-import parse from './parser.js';
+import parse from './parsers.js';
 import render from './formatters/formatter.js';
 import states from './inner-states.js';
 
-const isKeyObject = (object, key) => _.isObject(object[key]) && !_.isArray(object[key]);
-
 const toNodeObject = (object, key) => {
-  return !isKeyObject(object, key) ? object[key] : _.keys(object[key]).map((innerKey) => {
+  return !_.isPlainObject(object[key]) ? object[key] : _.keys(object[key]).map((innerKey) => {
     return {
       name: innerKey,
       value: object[key][innerKey],
@@ -31,11 +29,11 @@ const conditions = [
     conditionResult: (key, object) => ({ name: key, value: toNodeObject(object, key), action: states.notModified })
   },
   {
-    condition: (object1, object2, key) => !(isKeyObject(object1, key) && isKeyObject(object2, key)),
+    condition: (object1, object2, key) => !(_.isPlainObject(object1[key]) && _.isPlainObject(object2[key])),
     conditionResult: (key, object2, object1) => ({ name: key, value: toNodeObject(object2, key), oldValue: toNodeObject(object1, key), action: states.modified })
   },
   {
-    condition: (object1, object2, key) => isKeyObject(object1, key) && isKeyObject(object2, key),
+    condition: (object1, object2, key) => _.isPlainObject(object1[key]) && _.isPlainObject(object2[key]),
     conditionResult: (key, object2, object1, callback) => ({ name: key, value: callback(object1[key], object2[key]), action: states.modified })
   }
 ];
@@ -58,3 +56,6 @@ const diff = (filepathBefore, filepathAfter, format) => {
 };
 
 export default diff;
+
+diff('/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/before.json',
+'/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/after.json', 'string');
