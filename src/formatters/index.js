@@ -1,4 +1,4 @@
-import json from './json-formatter.js';
+import json from './string-formatter.js';
 import plain from './plain-formatter.js';
 
 const render = (data, format) => {
@@ -10,7 +10,7 @@ const render = (data, format) => {
       return plain(data);
 
     case 'json':
-      return JSON.stringify({ properies: data });
+      return JSON.stringify(data);
 
     default:
       return 'unknown format';

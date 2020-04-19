@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { readFileSync } from 'fs';
 import path from 'path';
 import parse from './parsers.js';
-import render from './formatters/formatter.js';
+import render from './formatters/index.js';
 import states from './inner-states.js';
 
 const conditions = [
@@ -41,8 +41,10 @@ const diff = (filepathBefore, filepathAfter, format) => {
   const fileContentAfter = readFileSync(filepathAfter, 'utf-8');
   const dataBefore = parse(fileContentBefore, path.extname(filepathBefore));
   const dataAfter = parse(fileContentAfter, path.extname(filepathAfter));
-  const dif = diffKeys(dataBefore, dataAfter);
-  return render(dif, format);
+  const diffResult = diffKeys(dataBefore, dataAfter);
+  return render(diffResult, format);
 };
 
 export default diff;
+
+diff('/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/before.json', '/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/after.json', 'string');
