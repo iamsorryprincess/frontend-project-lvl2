@@ -11,16 +11,23 @@ const addSpaces = (str, level) => {
   return addSpaceByLevel(result, level, 1);
 };
 
+const renderObject = (value, level) => _.keys(value).map(key => addSpaces(`${key}: ${value[key]}`, level + 1));
+
+const renderTitle = (name, level, sign = null) => {
+  const headerText = sign === null ? `${name}: {` : addSign(`${name}: {`, sign);
+  const header = addSpaces(headerText, level);
+  const footer = addSpaces('}', level);
+  return { header, footer };
+};
+
 const renderNode= (name, value, level, callback, sign = null) => {
   if (!_.isObject(value)) {
     const result = !sign ? `${name}: ${value}` : addSign(`${name}: ${value}`, sign);
     return !sign ? addSpaces(result, level) : addSpaces(result, level);
   }
 
-  const headerText = sign === null ? `${name}: {` : addSign(`${name}: {`, sign);
-  const header = addSpaces(headerText, level);
-  const body = _.isArray(value) ? callback(value, level) : _.keys(value).map(key => addSpaces(`${key}: ${value[key]}`, level + 1));
-  const footer = addSpaces('}', level);
+  const { header, footer } = renderTitle(name, level, sign);
+  const body = _.isArray(value) ? callback(value, level) : renderObject(value, level);
   return `${header}\n${body}\n${footer}`;
 };
 
