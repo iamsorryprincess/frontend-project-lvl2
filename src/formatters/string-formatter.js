@@ -18,7 +18,12 @@ const renderObject = (value, level) => {
   });
 };
 
-const renderNested= (name, value, level, callback, sign = null) => {
+const renderNode= (name, value, level, callback, sign = null) => {
+  if (!_.isObject(value)) {
+    const result = !sign ? `${name}: ${value}` : addSign(`${name}: ${value}`, sign);
+    return !sign ? addSpaces(result, level) : addSpaces(result, level);
+  }
+
   const headerText = sign === null ? `${name}: {` : addSign(`${name}: {`, sign);
   const header = addSpaces(headerText, level);
   const body = _.isArray(value) ? callback(value, level) : renderObject(value, level);
@@ -26,60 +31,30 @@ const renderNested= (name, value, level, callback, sign = null) => {
   return `${header}\n${body}\n${footer}`;
 };
 
-const conditionsForModifiedNode = [
-  {
-    condition: (item) => _.isArray(item.value) && _.isUndefined(item.oldValue),
-    conditionResult: (item, level, callback) => renderNested(item.name, item.value, level, callback)
-  },
-  {
-    condition: (item) => _.isObject(item.value) && !_.isUndefined(item.oldValue) && _.isObject(item.oldValue),
-    conditionResult: (item, level, callback) => `${renderNested(item.name, item.oldValue, level, callback, '-')}\n${renderNested(item.name, item.value, level, callback, '+')}`
-  },
-  {
-    condition: (item) => _.isObject(item.value) && !_.isUndefined(item.oldValue) && !_.isObject(item.oldValue),
-    conditionResult: (item, level, callback) => `${addSpaces(addSign(`${item.name}: ${item.oldValue}`, '-'), level)}\n${renderNested(item.name, item.value, level, callback, '+')}`
-  },
-  {
-    condition: (item) => !_.isObject(item.value) && !_.isUndefined(item.oldValue) && _.isObject(item.oldValue),
-    conditionResult: (item, level, callback) => `${renderNested(item.name, item.oldValue, level, callback, '-')}\n${addSpaces(addSign(`${item.name}: ${item.value}`, '+'), level)}`
-  },
-  {
-    condition: (item) => !_.isObject(item.value) && !_.isUndefined(item.oldValue) && !_.isObject(item.oldValue),
-    conditionResult: (item, level) => `${addSpaces(addSign(`${item.name}: ${item.oldValue}`, '-'), level)}\n${addSpaces(addSign(`${item.name}: ${item.value}`, '+'), level)}`
-  }
-];
-
 const conditions = [
   {
-    condition: (item) => item.action === states.modified,
+    condition: (item) => item.type === states.modified,
     conditionResult: (item, level, callback) => {
-      const { conditionResult } = conditionsForModifiedNode.find(({ condition }) => condition(item));
-      return conditionResult(item, level, callback);
+      if (_.isUndefined(item.oldValue)) {
+        return renderNode(item.name, item.value, level, callback);
+      }
+
+      const oldValue = renderNode(item.name, item.oldValue, level, callback, '-');
+      const newValue = renderNode(item.name, item.newValue, level, callback, '+');
+      return `${oldValue}\n${newValue}`;
     }
   },
   {
-    condition: (item) => item.action === states.notModified && !_.isObject(item.value),
-    conditionResult: (item, level) => addSpaces(`${item.name}: ${item.value}`, level)
+    condition: (item) => item.type === states.notModified,
+    conditionResult: (item, level) => renderNode(item.name, item.value, level)
   },
   {
-    condition: (item) => item.action === states.notModified && _.isObject(item.value),
-    conditionResult: (item, level) => renderNested(item.name, item.value, level)
+    condition: (item) => item.type === states.added,
+    conditionResult: (item, level, callback) => renderNode(item.name, item.value, level, callback, '+')
   },
   {
-    condition: (item) => item.action === states.added && !_.isObject(item.value),
-    conditionResult: (item, level) => addSpaces(addSign(`${item.name}: ${item.value}`, '+'), level)
-  },
-  {
-    condition: (item) => item.action === states.added && _.isObject(item.value),
-    conditionResult: (item, level, callback) => renderNested(item.name, item.value, level, callback, '+')
-  },
-  {
-    condition: (item) => item.action === states.removed && !_.isObject(item.value),
-    conditionResult: (item, level) => addSpaces(addSign(`${item.name}: ${item.value}`, '-'), level)
-  },
-  {
-    condition: (item) => item.action === states.removed && _.isObject(item.value),
-    conditionResult: (item, level, callback) => renderNested(item.name, item.value, level, callback, '-')
+    condition: (item) => item.type === states.removed,
+    conditionResult: (item, level, callback) => renderNode(item.name, item.value, level, callback, '-')
   }
 ];
 

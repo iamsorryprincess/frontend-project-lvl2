@@ -8,23 +8,23 @@ import states from './inner-states.js';
 const conditions = [
   {
     condition: (object1, object2, key) => _.has(object2, key) && !_.has(object1, key),
-    conditionResult: (key, object) => ({ name: key, value: object[key], action: states.added })
+    conditionResult: (key, object) => ({ name: key, value: object[key], type: states.added })
   },
   {
     condition: (object1, object2, key) => !_.has(object2, key) && _.has(object1, key),
-    conditionResult: (key, object2, object1) => ({ name: key, value: object1[key], action: states.removed })
+    conditionResult: (key, object2, object1) => ({ name: key, value: object1[key], type: states.removed })
   },
   {
     condition: (object1, object2, key) => object1[key] === object2[key],
-    conditionResult: (key, object) => ({ name: key, value: object[key], action: states.notModified })
+    conditionResult: (key, object) => ({ name: key, value: object[key], type: states.notModified })
   },
   {
     condition: (object1, object2, key) => !(_.isPlainObject(object1[key]) && _.isPlainObject(object2[key])),
-    conditionResult: (key, object2, object1) => ({ name: key, value: object2[key], oldValue: object1[key], action: states.modified })
+    conditionResult: (key, object2, object1) => ({ name: key, newValue: object2[key], oldValue: object1[key], type: states.modified })
   },
   {
     condition: (object1, object2, key) => _.isPlainObject(object1[key]) && _.isPlainObject(object2[key]),
-    conditionResult: (key, object2, object1, callback) => ({ name: key, value: callback(object1[key], object2[key]), action: states.modified })
+    conditionResult: (key, object2, object1, callback) => ({ name: key, value: callback(object1[key], object2[key]), type: states.modified })
   }
 ];
 
@@ -47,4 +47,4 @@ const diff = (filepathBefore, filepathAfter, format) => {
 
 export default diff;
 
-diff('/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/before.json', '/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/after.json', 'string');
+diff('/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/before.json', '/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/after.json', 'plain');

@@ -6,23 +6,23 @@ const buildStringValue = (value) => _.isObject(value) ? '[complex value]' : valu
 
 const conditions = [
   {
-    condition: (item) => item.action === states.modified && _.isArray(item.value) && _.isUndefined(item.oldValue),
+    condition: (item) => item.type === states.modified && _.isArray(item.value) && _.isUndefined(item.oldValue),
     conditionResult: (item, path, callback) => callback(item.value, [...path, item.name])
   },
   {
-    condition: (item) => item.action === states.modified && !_.isUndefined(item.oldValue),
-    conditionResult: (item, path) => `Property ${buildStringName(item.name, path)} was changed from ${buildStringValue(item.oldValue)} to ${buildStringValue(item.value)}`
+    condition: (item) => item.type === states.modified && !_.isUndefined(item.oldValue),
+    conditionResult: (item, path) => `Property ${buildStringName(item.name, path)} was changed from ${buildStringValue(item.oldValue)} to ${buildStringValue(item.newValue)}`
   },
   {
-    condition: (item) => item.action === states.removed,
+    condition: (item) => item.type === states.removed,
     conditionResult: (item, path) => `Property ${buildStringName(item.name, path)} was deleted`
   },
   {
-    condition: (item) => item.action === states.added,
+    condition: (item) => item.type === states.added,
     conditionResult: (item, path) => `Property ${buildStringName(item.name, path)} was added with value: ${buildStringValue(item.value)}`
   },
   {
-    condition: (item) => item.action === states.notModified,
+    condition: (item) => item.type === states.notModified,
     conditionResult: () => []
   }
 ];
