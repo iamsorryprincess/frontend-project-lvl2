@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import { readFileSync } from 'fs';
 import path from 'path';
-import parse from './parsers.js';
 import render from './formatters/index.js';
 import states from './inner-states.js';
+import parsers from './parsers.js';
 
 const conditions = [
   {
@@ -39,8 +39,9 @@ const diffKeys = (dataBefore, dataAfter) => {
 const diff = (filepathBefore, filepathAfter, format) => {
   const fileContentBefore = readFileSync(filepathBefore, 'utf-8');
   const fileContentAfter = readFileSync(filepathAfter, 'utf-8');
-  const dataBefore = parse(fileContentBefore, path.extname(filepathBefore));
-  const dataAfter = parse(fileContentAfter, path.extname(filepathAfter));
+  const parse = parsers(path.extname(filepathBefore));
+  const dataBefore = parse(fileContentBefore);
+  const dataAfter = parse(fileContentAfter);
   const diffResult = diffKeys(dataBefore, dataAfter);
   return render(diffResult, format);
 };

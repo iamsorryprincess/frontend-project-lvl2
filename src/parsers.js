@@ -1,8 +1,8 @@
 import yaml from 'js-yaml';
 import ini from 'ini';
 
-const getParser = (fileExtension) => {
-  switch (fileExtension) {
+export default (format) => {
+  switch (format) {
     case '.json':
       return JSON.parse;
     
@@ -13,13 +13,6 @@ const getParser = (fileExtension) => {
       return ini.parse;
 
     default:
-      throw new Error(`Unknown file extension: '${fileExtension}'!`);
+      throw new Error(`Unknown format: '${format}'!`);
   }
 };
-
-const parse = (data, extension) => {
-  const parseFileData = getParser(extension);
-  return parseFileData(data);
-}
-
-export default parse;
