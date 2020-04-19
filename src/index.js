@@ -46,5 +46,3 @@ const diff = (filepathBefore, filepathAfter, format) => {
 };
 
 export default diff;
-
-diff('/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/before.json', '/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/after.json', 'json');
