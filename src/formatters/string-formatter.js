@@ -11,8 +11,6 @@ const addSpaces = (str, level) => {
   return addSpaceByLevel(result, level, 1);
 };
 
-const renderObject = (value, level) => _.keys(value).map(key => addSpaces(`${key}: ${value[key]}`, level + 1));
-
 const renderTitle = (name, level, sign = null) => {
   const headerText = sign === null ? `${name}: {` : addSign(`${name}: {`, sign);
   const header = addSpaces(headerText, level);
@@ -20,27 +18,31 @@ const renderTitle = (name, level, sign = null) => {
   return { header, footer };
 };
 
-const renderNode= (name, value, level, callback, sign = null) => {
+const renderNode= (name, value, level, sign = null) => {
   if (!_.isObject(value)) {
     const result = !sign ? `${name}: ${value}` : addSign(`${name}: ${value}`, sign);
     return !sign ? addSpaces(result, level) : addSpaces(result, level);
   }
 
   const { header, footer } = renderTitle(name, level, sign);
-  const body = _.isArray(value) ? callback(value, level) : renderObject(value, level);
+  const body = _.keys(value).map(key => addSpaces(`${key}: ${value[key]}`, level + 1));
   return `${header}\n${body}\n${footer}`;
 };
 
 const conditions = [
   {
     condition: (item) => item.type === states.nested,
-    conditionResult: (item, level, callback) => renderNode(item.name, item.children, level, callback)
+    conditionResult: (item, level, callback) => {
+      const { header, footer } = renderTitle(item.name, level);
+      const body = callback(item.children, level);
+      return `${header}\n${body}\n${footer}`;
+    }
   },
   {
     condition: (item) => item.type === states.modified,
-    conditionResult: (item, level, callback) => {
-      const oldValue = renderNode(item.name, item.oldValue, level, callback, '-');
-      const newValue = renderNode(item.name, item.newValue, level, callback, '+');
+    conditionResult: (item, level) => {
+      const oldValue = renderNode(item.name, item.oldValue, level, '-');
+      const newValue = renderNode(item.name, item.newValue, level, '+');
       return `${oldValue}\n${newValue}`;
     }
   },
@@ -50,11 +52,11 @@ const conditions = [
   },
   {
     condition: (item) => item.type === states.added,
-    conditionResult: (item, level, callback) => renderNode(item.name, item.value, level, callback, '+')
+    conditionResult: (item, level) => renderNode(item.name, item.value, level, '+')
   },
   {
     condition: (item) => item.type === states.removed,
-    conditionResult: (item, level, callback) => renderNode(item.name, item.value, level, callback, '-')
+    conditionResult: (item, level) => renderNode(item.name, item.value, level, '-')
   }
 ];
 
