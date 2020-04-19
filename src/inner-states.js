@@ -2,7 +2,8 @@ const config = {
   modified: 'modified',
   notModified: 'not modified',
   added: 'added',
-  removed: 'removed'
+  removed: 'removed',
+  nested: 'nested'
 };
 
 export default config;

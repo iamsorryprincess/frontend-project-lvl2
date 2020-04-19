@@ -24,7 +24,7 @@ const conditions = [
   },
   {
     condition: (object1, object2, key) => _.isPlainObject(object1[key]) && _.isPlainObject(object2[key]),
-    conditionResult: (key, object2, object1, callback) => ({ name: key, value: callback(object1[key], object2[key]), type: states.modified })
+    conditionResult: (key, object2, object1, callback) => ({ name: key, children: callback(object1[key], object2[key]), type: states.nested })
   }
 ];
 
@@ -46,3 +46,5 @@ const diff = (filepathBefore, filepathAfter, format) => {
 };
 
 export default diff;
+
+diff('/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/before.json', '/home/kekit/Desktop/frontend-project-lvl2/__tests__/__fixtures__/after.json', 'json');

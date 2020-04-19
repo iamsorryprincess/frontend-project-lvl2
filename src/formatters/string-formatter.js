@@ -33,12 +33,12 @@ const renderNode= (name, value, level, callback, sign = null) => {
 
 const conditions = [
   {
+    condition: (item) => item.type === states.nested,
+    conditionResult: (item, level, callback) => renderNode(item.name, item.children, level, callback)
+  },
+  {
     condition: (item) => item.type === states.modified,
     conditionResult: (item, level, callback) => {
-      if (_.isUndefined(item.oldValue)) {
-        return renderNode(item.name, item.value, level, callback);
-      }
-
       const oldValue = renderNode(item.name, item.oldValue, level, callback, '-');
       const newValue = renderNode(item.name, item.newValue, level, callback, '+');
       return `${oldValue}\n${newValue}`;
