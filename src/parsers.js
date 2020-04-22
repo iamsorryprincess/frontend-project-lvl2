@@ -3,13 +3,13 @@ import ini from 'ini';
 
 export default (format) => {
   switch (format) {
-    case '.json':
+    case 'json':
       return JSON.parse;
     
-    case '.yml':
+    case 'yml':
       return yaml.safeLoad;
 
-    case '.ini':
+    case 'ini':
       return ini.parse;
 
     default:

@@ -1,6 +1,6 @@
 const config = {
   modified: 'modified',
-  notModified: 'not modified',
+  notModified: 'notModified',
   added: 'added',
   removed: 'removed',
   nested: 'nested'

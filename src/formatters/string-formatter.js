@@ -11,59 +11,43 @@ const addSpaces = (str, level) => {
   return addSpaceByLevel(result, level, 1);
 };
 
-const renderTitle = (name, level, sign = null) => {
-  const headerText = sign === null ? `${name}: {` : addSign(`${name}: {`, sign);
-  const header = addSpaces(headerText, level);
-  const footer = addSpaces('}', level);
-  return { header, footer };
-};
-
 const renderNode= (name, value, level, sign = null) => {
+  const buildString = (value) => !sign ? `${name}: ${value}` : addSign(`${name}: ${value}`, sign);
+
   if (!_.isObject(value)) {
-    const result = !sign ? `${name}: ${value}` : addSign(`${name}: ${value}`, sign);
-    return !sign ? addSpaces(result, level) : addSpaces(result, level);
+    const result = buildString(value);
+    return addSpaces(result, level);
   }
 
-  const { header, footer } = renderTitle(name, level, sign);
-  const body = _.keys(value).map(key => addSpaces(`${key}: ${value[key]}`, level + 1));
-  return `${header}\n${body}\n${footer}`;
+  const openString = addSpaces(buildString('{'), level);
+  const valueString = _.keys(value).map(key => addSpaces(`${key}: ${value[key]}`, level + 1));
+  const closeString = addSpaces('}', level);
+  return `${openString}\n${valueString}\n${closeString}`;
 };
 
-const conditions = [
-  {
-    condition: (item) => item.type === states.nested,
-    conditionResult: (item, level, callback) => {
-      const { header, footer } = renderTitle(item.name, level);
-      const body = callback(item.children, level);
-      return `${header}\n${body}\n${footer}`;
-    }
+const conditions = {
+  [states.nested]: (item, level, callback) => {
+    const openString = addSpaces(`${item.name}: {`, level);
+    const valueString = callback(item.children, level);
+    const closeString = addSpaces('}', level);
+    return `${openString}\n${valueString}\n${closeString}`;
   },
-  {
-    condition: (item) => item.type === states.modified,
-    conditionResult: (item, level) => {
-      const oldValue = renderNode(item.name, item.oldValue, level, '-');
-      const newValue = renderNode(item.name, item.newValue, level, '+');
-      return `${oldValue}\n${newValue}`;
-    }
+
+  [states.modified]: (item, level) => {
+    const oldValue = renderNode(item.name, item.oldValue, level, '-');
+    const newValue = renderNode(item.name, item.newValue, level, '+');
+    return `${oldValue}\n${newValue}`;
   },
-  {
-    condition: (item) => item.type === states.notModified,
-    conditionResult: (item, level) => renderNode(item.name, item.value, level)
-  },
-  {
-    condition: (item) => item.type === states.added,
-    conditionResult: (item, level) => renderNode(item.name, item.value, level, '+')
-  },
-  {
-    condition: (item) => item.type === states.removed,
-    conditionResult: (item, level) => renderNode(item.name, item.value, level, '-')
-  }
-];
+
+  [states.notModified]: (item, level) => renderNode(item.name, item.value, level),
+  [states.added]: (item, level) => renderNode(item.name, item.value, level, '+'),
+  [states.removed]: (item, level) => renderNode(item.name, item.value, level, '-')
+};
 
 const render = (diff) => {
   const inner = (nodes, level) => {
     const result = nodes.map(node => {
-      const { conditionResult } = conditions.find(({ condition }) => condition(node));
+      const conditionResult = conditions[node.type];
       return conditionResult(node, level + 1, inner);
     });
     return result.join('\n');

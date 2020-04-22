@@ -39,8 +39,8 @@ const diffKeys = (dataBefore, dataAfter) => {
 const diff = (filepathBefore, filepathAfter, format) => {
   const fileContentBefore = readFileSync(filepathBefore, 'utf-8');
   const fileContentAfter = readFileSync(filepathAfter, 'utf-8');
-  const parseBefore = parsers(path.extname(filepathBefore));
-  const parseAfter = parsers(path.extname(filepathAfter));
+  const parseBefore = parsers(path.extname(filepathBefore).slice(1));
+  const parseAfter = parsers(path.extname(filepathAfter).slice(1));
   const dataBefore = parseBefore(fileContentBefore);
   const dataAfter = parseAfter(fileContentAfter);
   const diffResult = diffKeys(dataBefore, dataAfter);
