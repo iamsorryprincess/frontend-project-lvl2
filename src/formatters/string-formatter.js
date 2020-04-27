@@ -3,24 +3,21 @@ import states from '../inner-states.js';
 
 const addSign = (value, sign) => `${sign} ${value}`;
 
-const addSpaces = (str, level) => {
-  const longSpace = '    ';
-  const shortSpace = '  ';
-  const result = str[0] === '+' || str[0] === '-' ? `${shortSpace}${str}` : `${longSpace}${str}`;
-  const addSpaceByLevel = (str, level, current) => current === level ? str : addSpaceByLevel(`${longSpace}${str}`, level, current + 1);
-  return addSpaceByLevel(result, level, 1);
+const addSpaces = (str, level, currentLevel = 0) => {
+  if (currentLevel === level) {
+    return str;
+  }
+  return addSpaces(` ${str}`, level, currentLevel + 1);
 };
 
-const renderNode= (name, value, level, sign = null) => {
-  const buildString = (value) => !sign ? `${name}: ${value}` : addSign(`${name}: ${value}`, sign);
-
+const renderNode= (name, value, level, sign = ' ') => {
   if (!_.isObject(value)) {
-    const result = buildString(value);
+    const result = addSign(`${name}: ${value}`, sign);
     return addSpaces(result, level);
   }
 
-  const openString = addSpaces(buildString('{'), level);
-  const valueString = _.keys(value).map(key => addSpaces(`${key}: ${value[key]}`, level + 1));
+  const openString = addSpaces(addSign(`${name}: {`, sign), level);
+  const valueString = _.keys(value).map(key => addSpaces(`${key}: ${value[key]}`, level + 3));
   const closeString = addSpaces('}', level);
   return `${openString}\n${valueString}\n${closeString}`;
 };
